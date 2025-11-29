@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
     <title>재경이의 독서통장</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -92,15 +92,38 @@
         .checkbox-wrapper input:checked + div svg {
             display: block;
         }
+
+        /* 키보드 활성 모드 애니메이션 */
+        #app-header, #app-footer {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 200px;
+            opacity: 1;
+            overflow: hidden;
+        }
+
+        /* 키보드 모드일 때 헤더와 푸터를 숨김 */
+        .keyboard-active #app-header {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            opacity: 0;
+            margin: 0;
+        }
+        .keyboard-active #app-footer {
+            max-height: 0;
+            padding: 0;
+            opacity: 0;
+            border: none;
+        }
     </style>
 </head>
 <body class="flex justify-center items-start min-h-screen bg-yellow-50">
 
-    <!-- 모바일 앱 컨테이너 -->
-    <div class="w-full max-w-md h-[100vh] sm:h-[90vh] sm:mt-8 bg-white sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden relative border-4 border-yellow-200">
+    <!-- 모바일 앱 컨테이너 (ID 추가) -->
+    <div id="app-container" class="w-full max-w-md h-[100vh] sm:h-[90vh] sm:mt-8 bg-white sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden relative border-4 border-yellow-200 transition-all duration-300">
         
-        <!-- 상단 헤더 -->
-        <header class="bg-yellow-400 p-4 pt-6 rounded-b-[2rem] shadow-md z-10 flex flex-col items-center justify-center shrink-0">
+        <!-- 상단 헤더 (ID 추가) -->
+        <header id="app-header" class="bg-yellow-400 p-4 pt-6 rounded-b-[2rem] shadow-md z-10 flex flex-col items-center justify-center shrink-0">
             <h1 class="text-3xl text-white drop-shadow-md tracking-wider flex items-center gap-2">
                 <i class="fas fa-book-reader text-yellow-100"></i>
                 재경이의 독서통장
@@ -113,7 +136,7 @@
         </header>
 
         <!-- 메인 콘텐츠 영역 -->
-        <main class="flex-1 overflow-y-auto p-4 space-y-4">
+        <main class="flex-1 overflow-y-auto p-4 space-y-4" id="main-content">
             
             <!-- 주간 달력 및 동전 영역 -->
             <section class="bg-white p-3 rounded-3xl border-2 border-yellow-100 shadow-sm">
@@ -128,7 +151,6 @@
 
             <!-- 책 기록 영역 -->
             <section class="bg-blue-50 p-5 rounded-3xl border-2 border-blue-100 shadow-sm">
-                <!-- 수정됨: font-bold -> font-medium -->
                 <h2 class="text-lg text-blue-600 font-medium mb-3 flex items-center gap-2">
                     <i class="fas fa-pencil-alt"></i> <span id="selected-date-display">오늘</span> 읽은 책 기록하기
                 </h2>
@@ -137,7 +159,7 @@
                     <input type="text" id="book-input" class="w-full bg-white p-3 rounded-xl border border-blue-200 focus:outline-none focus:border-blue-400 transition mb-2" placeholder="책 제목을 입력하세요" onkeypress="if(event.key === 'Enter') saveBook()">
                     
                     <!-- 2배 적립 체크박스 -->
-                    <label for="double-coin-check" class="checkbox-wrapper flex items-center gap-2 cursor-pointer select-none bg-white p-2 rounded-xl border border-blue-100 hover:bg-blue-50 transition">
+                    <label for="double-coin-check" class="checkbox-wrapper flex items-center gap-2 cursor-pointer select-none bg-white p-2 rounded-xl border border-blue-100 hover:bg-blue-50 transition" onmousedown="event.preventDefault()">
                         <input type="checkbox" id="double-coin-check" class="opacity-0 absolute w-0 h-0">
                         <div class="w-6 h-6 border-2 border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 transition-colors shrink-0">
                             <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
@@ -146,13 +168,13 @@
                     </label>
                 </div>
 
-                <button onclick="saveBook()" class="w-full bg-blue-400 hover:bg-blue-500 text-white py-3 rounded-xl shadow-md transition active:scale-95 font-medium text-lg tracking-widest">
+                <!-- mousedown 이벤트 추가: 버튼 클릭 시 키보드가 내려가면서 클릭이 씹히는 현상 방지 -->
+                <button onmousedown="event.preventDefault()" onclick="saveBook()" class="w-full bg-blue-400 hover:bg-blue-500 text-white py-3 rounded-xl shadow-md transition active:scale-95 font-medium text-lg tracking-widest">
                     저금통에 넣기 💰
                 </button>
                 
                 <!-- 선택된 날짜의 책 목록 -->
                 <div class="mt-4 bg-white p-3 rounded-xl border border-blue-100 h-32 overflow-y-auto">
-                    <!-- 수정됨: 문구 변경 및 font-bold -> font-medium -->
                     <h3 class="text-sm text-gray-500 font-medium mb-2">📜 독서통장 기록</h3>
                     <ul id="daily-book-list" class="space-y-2 text-gray-700">
                         <!-- JS로 책 목록 렌더링 -->
@@ -163,8 +185,8 @@
 
         </main>
 
-        <!-- 캐릭터 푸터 -->
-        <footer class="shrink-0 bg-white/90 backdrop-blur-sm p-3 border-t border-yellow-100 flex items-center gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+        <!-- 캐릭터 푸터 (ID 추가) -->
+        <footer id="app-footer" class="shrink-0 bg-white/90 backdrop-blur-sm p-3 border-t border-yellow-100 flex items-center gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
             <div class="relative shrink-0">
                 <!-- SVG 직접 삽입 (이미지 깨짐 방지) -->
                 <div class="w-16 h-16 rounded-full border-4 border-yellow-300 bg-yellow-100 shadow-md overflow-hidden relative">
@@ -189,7 +211,6 @@
 
     <!-- 수정된 월간 달력 모달 (전체 스크롤 방식) -->
     <div id="monthly-calendar-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <!-- max-h-[90vh] overflow-y-auto 추가하여 내용이 넘치면 모달 전체가 스크롤되도록 수정 -->
         <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto border-4 border-yellow-200">
             
             <button onclick="closeMonthlyCalendar()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10 bg-white rounded-full p-1 shadow-sm">
@@ -272,7 +293,34 @@
             renderWeeklyCalendar();
             updateUI();
             updateDailyBookList();
+
+            // --- 키보드 대응 로직 추가 ---
+            setupKeyboardHandling();
         });
+
+        // --- 키보드 핸들링 함수 ---
+        function setupKeyboardHandling() {
+            const appContainer = document.getElementById('app-container');
+            const bookInput = document.getElementById('book-input');
+
+            // 포커스 시: 헤더와 푸터를 숨겨서 공간 확보
+            bookInput.addEventListener('focus', () => {
+                appContainer.classList.add('keyboard-active');
+                // 부드럽게 입력창으로 스크롤
+                setTimeout(() => {
+                    bookInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            });
+
+            // 포커스 해제 시: 다시 원래대로 복구
+            bookInput.addEventListener('blur', () => {
+                // 저장 버튼 클릭 시 blur가 먼저 발생해서 UI가 움직이는 것을 방지하기 위해 딜레이
+                setTimeout(() => {
+                    // 현재 활성화된 요소가 body가 아니면 (즉, 다른 상호작용 중이 아니면) 복구
+                    appContainer.classList.remove('keyboard-active');
+                }, 100);
+            });
+        }
 
         // --- 유틸리티 함수 ---
         function getFormattedDate(date) {
@@ -372,6 +420,9 @@
             input.value = '';
             checkbox.checked = false;
             
+            // 저장 후 포커스 해제 (키보드 내림 & 헤더 복구)
+            input.blur();
+
             renderWeeklyCalendar();
             updateUI();
             updateDailyBookList();
@@ -413,7 +464,6 @@
                 dayBooks.forEach(book => {
                     const li = document.createElement('li');
                     li.className = 'bg-white p-2 rounded-lg border border-gray-100 flex items-center justify-between gap-2 group hover:bg-gray-50 transition';
-                    // 수정됨: font-bold 제거
                     const coinBadge = (book.coins === 2) 
                         ? '<span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full whitespace-nowrap">동전x2</span>' 
                         : '<span class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full whitespace-nowrap">동전x1</span>';
@@ -477,7 +527,6 @@
             const listContainer = document.getElementById('monthly-book-list');
             const dayBooks = getBooksByDate(dateStr);
             
-            // 수정됨: font-bold 제거
             listTitle.innerHTML = `<span class="text-blue-600 font-medium">${month + 1}월 ${day}일</span> 읽은 책 (${dayBooks.length}권)`;
             
             listContainer.innerHTML = '';
@@ -491,7 +540,6 @@
                 dayBooks.forEach(book => {
                     const li = document.createElement('li');
                     li.className = 'bg-white p-3 rounded-xl border border-blue-100 shadow-sm flex items-center justify-between gap-2';
-                    // 수정됨: font-bold 제거
                     const coinBadge = (book.coins === 2) 
                         ? '<span class="text-[10px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full whitespace-nowrap">x2</span>' 
                         : '<span class="text-[10px] bg-yellow-100 text-yellow-600 px-1.5 py-0.5 rounded-full whitespace-nowrap">x1</span>';
