@@ -105,7 +105,7 @@
                 <i class="fas fa-book-reader text-yellow-100"></i>
                 재경이의 독서통장
             </h1>
-            <div class="mt-3 flex gap-4 text-white text-sm font-bold bg-yellow-500 bg-opacity-50 px-4 py-1 rounded-full">
+            <div class="mt-3 flex gap-4 text-white text-sm font-medium bg-yellow-500 bg-opacity-50 px-4 py-1 rounded-full">
                 <span>누적 동전: <span id="total-books" class="text-yellow-100 text-lg">0</span>개</span>
                 <span>|</span>
                 <span>다음 선물까지: <span id="next-goal" class="text-yellow-100 text-lg">50</span>개</span>
@@ -118,7 +118,7 @@
             <!-- 주간 달력 및 동전 영역 -->
             <section class="bg-white p-3 rounded-3xl border-2 border-yellow-100 shadow-sm">
                 <div class="flex justify-between items-center mb-2 px-1">
-                    <h2 class="text-lg text-gray-700 font-bold"><i class="fas fa-calendar-week mr-2 text-yellow-500"></i>이번 주 독서 기록</h2>
+                    <h2 class="text-lg text-gray-700 font-medium"><i class="fas fa-calendar-week mr-2 text-yellow-500"></i>이번 주 독서 기록</h2>
                     <button onclick="openMonthlyCalendar()" class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-lg hover:bg-gray-200 transition">전체 달력 보기</button>
                 </div>
                 <div id="weekly-calendar" class="flex justify-between gap-1">
@@ -128,30 +128,32 @@
 
             <!-- 책 기록 영역 -->
             <section class="bg-blue-50 p-5 rounded-3xl border-2 border-blue-100 shadow-sm">
-                <h2 class="text-lg text-blue-600 font-bold mb-3 flex items-center gap-2">
-                    <i class="fas fa-pencil-alt"></i> <span id="selected-date-display">오늘</span>의 책 기록하기
+                <!-- 수정됨: font-bold -> font-medium -->
+                <h2 class="text-lg text-blue-600 font-medium mb-3 flex items-center gap-2">
+                    <i class="fas fa-pencil-alt"></i> <span id="selected-date-display">오늘</span> 읽은 책 기록하기
                 </h2>
                 
                 <div class="mb-4">
                     <input type="text" id="book-input" class="w-full bg-white p-3 rounded-xl border border-blue-200 focus:outline-none focus:border-blue-400 transition mb-2" placeholder="책 제목을 입력하세요" onkeypress="if(event.key === 'Enter') saveBook()">
                     
                     <!-- 2배 적립 체크박스 -->
-                    <label class="checkbox-wrapper flex items-center gap-2 cursor-pointer select-none bg-white p-2 rounded-xl border border-blue-100 hover:bg-blue-50 transition">
-                        <input type="checkbox" id="double-coin-check" class="hidden">
-                        <div class="w-6 h-6 border-2 border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 transition-colors">
+                    <label for="double-coin-check" class="checkbox-wrapper flex items-center gap-2 cursor-pointer select-none bg-white p-2 rounded-xl border border-blue-100 hover:bg-blue-50 transition">
+                        <input type="checkbox" id="double-coin-check" class="opacity-0 absolute w-0 h-0">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 transition-colors shrink-0">
                             <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
-                        <span class="text-gray-600 font-bold text-sm">어려운 책이었나요? (동전 2개! 🪙🪙)</span>
+                        <span class="text-gray-600 font-medium text-sm">어려운 책이었나요? (동전 2개! 🪙🪙)</span>
                     </label>
                 </div>
 
-                <button onclick="saveBook()" class="w-full bg-blue-400 hover:bg-blue-500 text-white py-3 rounded-xl shadow-md transition active:scale-95 font-bold text-lg">
+                <button onclick="saveBook()" class="w-full bg-blue-400 hover:bg-blue-500 text-white py-3 rounded-xl shadow-md transition active:scale-95 font-medium text-lg tracking-widest">
                     저금통에 넣기 💰
                 </button>
                 
                 <!-- 선택된 날짜의 책 목록 -->
                 <div class="mt-4 bg-white p-3 rounded-xl border border-blue-100 h-32 overflow-y-auto">
-                    <h3 class="text-sm text-gray-500 mb-2">📜 이 날 읽은 책 목록</h3>
+                    <!-- 수정됨: 문구 변경 및 font-bold -> font-medium -->
+                    <h3 class="text-sm text-gray-500 font-medium mb-2">📜 독서통장 기록</h3>
                     <ul id="daily-book-list" class="space-y-2 text-gray-700">
                         <!-- JS로 책 목록 렌더링 -->
                         <li class="text-gray-400 text-center py-4">아직 기록된 책이 없어요.</li>
@@ -167,19 +169,13 @@
                 <!-- SVG 직접 삽입 (이미지 깨짐 방지) -->
                 <div class="w-16 h-16 rounded-full border-4 border-yellow-300 bg-yellow-100 shadow-md overflow-hidden relative">
                     <svg viewBox="0 0 100 100" class="w-full h-full">
-                        <!-- 배경 -->
                         <rect width="100" height="100" fill="#FFECB3"/>
-                        <!-- 머리 -->
                         <path d="M50 20 C30 20 15 35 15 55 C15 75 30 90 50 90 C70 90 85 75 85 55 C85 35 70 20 50 20" fill="#FFCC80"/>
-                        <!-- 머리카락 -->
                         <path d="M15 55 C15 30 30 10 50 10 C70 10 85 30 85 55 C85 45 80 25 50 25 C20 25 15 45 15 55" fill="#5D4037"/>
-                        <!-- 눈 -->
                         <circle cx="35" cy="50" r="4" fill="#3E2723"/>
                         <circle cx="65" cy="50" r="4" fill="#3E2723"/>
-                        <!-- 홍조 -->
                         <circle cx="25" cy="60" r="5" fill="#FFAB91" opacity="0.6"/>
                         <circle cx="75" cy="60" r="5" fill="#FFAB91" opacity="0.6"/>
-                        <!-- 입 (웃는 모양) -->
                         <path d="M35 65 Q50 75 65 65" stroke="#3E2723" stroke-width="3" fill="none" stroke-linecap="round"/>
                     </svg>
                 </div>
@@ -191,35 +187,56 @@
 
     </div>
 
-    <!-- 월간 달력 모달 -->
-    <div id="monthly-calendar-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-4 shadow-2xl relative">
-            <button onclick="closeMonthlyCalendar()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+    <!-- 수정된 월간 달력 모달 (전체 스크롤 방식) -->
+    <div id="monthly-calendar-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <!-- max-h-[90vh] overflow-y-auto 추가하여 내용이 넘치면 모달 전체가 스크롤되도록 수정 -->
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto border-4 border-yellow-200">
+            
+            <button onclick="closeMonthlyCalendar()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10 bg-white rounded-full p-1 shadow-sm">
                 <i class="fas fa-times fa-lg"></i>
             </button>
-            <div class="flex justify-between items-center mb-4 px-2 mt-2">
-                <button onclick="changeMonth(-1)" class="text-gray-400 hover:text-yellow-500"><i class="fas fa-chevron-left fa-lg"></i></button>
-                <h2 id="calendar-title" class="text-xl text-gray-700 font-bold"></h2>
-                <button onclick="changeMonth(1)" class="text-gray-400 hover:text-yellow-500"><i class="fas fa-chevron-right fa-lg"></i></button>
-            </div>
             
-            <!-- 요일 헤더 -->
-            <div class="grid grid-cols-7 text-center mb-2 text-gray-500 text-sm">
-                <div class="text-red-400">일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div class="text-blue-400">토</div>
-            </div>
+            <div class="p-5 pb-8"> <!-- 내부 패딩 및 하단 여백 확보 -->
+                
+                <!-- 달력 헤더 -->
+                <div class="flex justify-between items-center mb-4 mt-2 px-2">
+                    <button onclick="changeMonth(-1)" class="text-gray-400 hover:text-yellow-500 p-2"><i class="fas fa-chevron-left fa-lg"></i></button>
+                    <h2 id="calendar-title" class="text-2xl text-gray-700 font-bold"></h2>
+                    <button onclick="changeMonth(1)" class="text-gray-400 hover:text-yellow-500 p-2"><i class="fas fa-chevron-right fa-lg"></i></button>
+                </div>
+                
+                <!-- 요일 헤더 -->
+                <div class="grid grid-cols-7 text-center mb-2 text-gray-500 text-sm font-bold">
+                    <div class="text-red-400">일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div class="text-blue-400">토</div>
+                </div>
 
-            <!-- 날짜 그리드 -->
-            <div id="calendar-days" class="calendar-grid mb-4">
-                <!-- JS로 렌더링 -->
-            </div>
+                <!-- 날짜 그리드 -->
+                <div id="calendar-days" class="calendar-grid mb-6">
+                    <!-- JS로 렌더링 -->
+                </div>
 
-            <!-- 범례 -->
-            <div class="flex justify-center items-center gap-2 text-xs text-gray-500 bg-gray-50 p-2 rounded-xl">
-                <span>조금</span>
-                <div class="w-4 h-4 rounded bg-yellow-100 border border-yellow-200"></div>
-                <div class="w-4 h-4 rounded bg-yellow-300 border border-yellow-400"></div>
-                <div class="w-4 h-4 rounded bg-yellow-500 border border-yellow-600"></div>
-                <span>많이</span>
+                <!-- 범례 -->
+                <div class="flex justify-center items-center gap-2 text-xs text-gray-500 bg-gray-50 p-3 rounded-xl mb-6 border border-gray-100">
+                    <span>조금</span>
+                    <div class="w-4 h-4 rounded bg-yellow-100 border border-yellow-200"></div>
+                    <div class="w-4 h-4 rounded bg-yellow-300 border border-yellow-400"></div>
+                    <div class="w-4 h-4 rounded bg-yellow-500 border border-yellow-600"></div>
+                    <span>많이</span>
+                </div>
+
+                <!-- 달력 아래 상세 목록 영역 (flex-1 제거하고 자연스럽게 높이 차지하도록 수정) -->
+                <div class="bg-blue-50 rounded-2xl border border-blue-100 overflow-hidden min-h-[150px]">
+                    <div class="p-3 bg-blue-100 border-b border-blue-200 flex items-center gap-2 sticky top-0">
+                        <i class="fas fa-list-ul text-blue-500"></i>
+                        <h3 class="text-sm font-bold text-gray-700 flex-1" id="monthly-list-title">날짜를 눌러보세요!</h3>
+                    </div>
+                    <ul id="monthly-book-list" class="space-y-2 p-3">
+                        <li class="text-gray-400 text-center text-sm flex flex-col items-center justify-center py-8">
+                            <i class="fas fa-hand-pointer mb-2 text-2xl opacity-30"></i>
+                            달력의 날짜를 누르면<br>여기에 책 목록이 나와요!
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -242,13 +259,16 @@
 
     <script>
         // --- 상태 관리 ---
-        // 데이터 구조 변경: { id, title, date, coins: 1 또는 2 }
         let books = JSON.parse(localStorage.getItem('jaekyung_books_v3')) || [];
-        let selectedDate = new Date(); // 현재 선택된 날짜
-        let calendarDate = new Date(); // 월간 달력 기준 날짜
+        let selectedDate = new Date();
+        let calendarDate = new Date();
+        let monthlySelectedDateStr = null;
         
         // --- 초기화 ---
         document.addEventListener('DOMContentLoaded', () => {
+            const checkbox = document.getElementById('double-coin-check');
+            if(checkbox) checkbox.checked = false;
+
             renderWeeklyCalendar();
             updateUI();
             updateDailyBookList();
@@ -271,7 +291,7 @@
 
             const today = new Date();
             const startOfWeek = new Date(today);
-            startOfWeek.setDate(today.getDate() - today.getDay()); // 일요일부터 시작
+            startOfWeek.setDate(today.getDate() - today.getDay()); 
 
             for (let i = 0; i < 7; i++) {
                 const date = new Date(startOfWeek);
@@ -290,22 +310,20 @@
                 dayCol.appendChild(dayLabel);
 
                 const dateLabel = document.createElement('div');
-                dateLabel.className = 'text-lg font-bold text-gray-700 mb-2';
+                dateLabel.className = 'text-lg font-medium text-gray-700 mb-2';
                 dateLabel.innerText = date.getDate();
                 dayCol.appendChild(dateLabel);
 
-                // 동전 쌓기 영역
                 const coinContainer = document.createElement('div');
                 coinContainer.className = 'flex flex-col-reverse items-center h-24 w-full overflow-hidden pb-1';
                 
-                // 동전 렌더링 (2배 책은 2개 렌더링)
                 let coinCount = 0;
                 dayBooks.forEach((book) => {
-                    const value = book.coins || 1; // 기본 1개
+                    const value = book.coins || 1;
                     for(let c=0; c < value; c++) {
-                        if (coinCount < 12) { // 공간상 제한
+                        if (coinCount < 12) {
                             const coin = document.createElement('div');
-                            coin.className = value === 2 ? 'coin special' : 'coin'; // 2배는 스페셜 스타일
+                            coin.className = value === 2 ? 'coin special' : 'coin';
                             coinContainer.appendChild(coin);
                         }
                         coinCount++;
@@ -327,7 +345,7 @@
         // --- 날짜 선택 ---
         function selectDate(date) {
             selectedDate = date;
-            renderWeeklyCalendar(); // 선택 효과 업데이트
+            renderWeeklyCalendar();
             updateDailyBookList();
             
             const dateStr = getFormattedDate(date);
@@ -342,7 +360,8 @@
             const checkbox = document.getElementById('double-coin-check');
             
             const title = input.value.trim();
-            const coins = checkbox.checked ? 2 : 1; // 체크되면 2개
+            const isDouble = checkbox.checked === true;
+            const coins = isDouble ? 2 : 1; 
 
             if (!title) { alert('책 제목을 입력해주세요!'); return; }
 
@@ -351,15 +370,34 @@
             localStorage.setItem('jaekyung_books_v3', JSON.stringify(books));
 
             input.value = '';
-            checkbox.checked = false; // 체크박스 초기화
+            checkbox.checked = false;
             
             renderWeeklyCalendar();
             updateUI();
             updateDailyBookList();
             checkMilestone();
             
-            const msg = coins === 2 ? `우와! 어려운 책을 읽었네! 동전 2개 획득! 🪙🪙` : `"${title}" 저금 완료! 참 잘했어!`;
+            const msg = isDouble ? `우와! 어려운 책을 읽었네! 동전 2개 획득! 🪙🪙` : `"${title}" 저금 완료! 참 잘했어!`;
             setMascotMessage(msg);
+        }
+
+        // --- 책 삭제 ---
+        function deleteBook(id) {
+            if(confirm('정말 이 책 기록을 지울까요?')) {
+                books = books.filter(book => book.id !== id);
+                localStorage.setItem('jaekyung_books_v3', JSON.stringify(books));
+                
+                renderWeeklyCalendar();
+                updateUI();
+                updateDailyBookList();
+                setMascotMessage('책 기록을 지웠어. 다시 읽고 기록해보자!');
+                
+                // 월간 달력이 열려있다면 갱신
+                if(!document.getElementById('monthly-calendar-modal').classList.contains('hidden') && monthlySelectedDateStr) {
+                    const [y, m, d] = monthlySelectedDateStr.split('-').map(Number);
+                    selectMonthlyDate(y, m-1, d); // 갱신
+                }
+            }
         }
 
         // --- 일일 책 목록 업데이트 ---
@@ -374,17 +412,23 @@
             } else {
                 dayBooks.forEach(book => {
                     const li = document.createElement('li');
-                    li.className = 'bg-white p-2 rounded-lg border border-gray-100 flex items-center justify-between gap-2';
+                    li.className = 'bg-white p-2 rounded-lg border border-gray-100 flex items-center justify-between gap-2 group hover:bg-gray-50 transition';
+                    // 수정됨: font-bold 제거
                     const coinBadge = (book.coins === 2) 
-                        ? '<span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full font-bold">동전x2</span>' 
-                        : '<span class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full">동전x1</span>';
+                        ? '<span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full whitespace-nowrap">동전x2</span>' 
+                        : '<span class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full whitespace-nowrap">동전x1</span>';
                     
                     li.innerHTML = `
-                        <div class="flex items-center gap-2 truncate">
-                            <i class="fas fa-book text-blue-300"></i>
-                            <span class="truncate">${book.title}</span>
+                        <div class="flex items-center gap-2 truncate flex-1">
+                            <i class="fas fa-book text-blue-300 shrink-0"></i>
+                            <span class="truncate text-sm font-medium text-gray-700">${book.title}</span>
                         </div>
-                        ${coinBadge}
+                        <div class="flex items-center gap-2 shrink-0">
+                            ${coinBadge}
+                            <button onclick="deleteBook(${book.id})" class="text-gray-300 hover:text-red-500 w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-50 transition" title="삭제">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                     `;
                     listContainer.appendChild(li);
                 });
@@ -393,20 +437,26 @@
 
         // --- UI 전체 업데이트 ---
         function updateUI() {
-            // 총 동전 개수 계산 (단순 책 권수가 아님)
             const totalCoins = books.reduce((sum, book) => sum + (book.coins || 1), 0);
-            
             document.getElementById('total-books').innerText = totalCoins;
-            
-            // 50개 단위 목표 계산
             const nextGoal = Math.ceil((totalCoins + 1) / 50) * 50;
             document.getElementById('next-goal').innerText = nextGoal - totalCoins;
         }
 
-        // --- 월간 달력 모달 ---
+        // --- 월간 달력 관련 함수 ---
         function openMonthlyCalendar() {
-            calendarDate = new Date(selectedDate); // 현재 선택된 날짜 기준으로 염
+            calendarDate = new Date(selectedDate);
+            monthlySelectedDateStr = null;
             renderMonthlyCalendar();
+            
+            // 목록 초기화
+            document.getElementById('monthly-list-title').innerText = "날짜를 눌러보세요!";
+            document.getElementById('monthly-book-list').innerHTML = `
+                <li class="text-gray-400 text-center text-sm flex flex-col items-center justify-center py-8">
+                    <i class="fas fa-hand-pointer mb-2 text-2xl opacity-30"></i>
+                    달력의 날짜를 누르면<br>여기에 책 목록이 나와요!
+                </li>`;
+            
             document.getElementById('monthly-calendar-modal').classList.remove('hidden');
         }
         function closeMonthlyCalendar() {
@@ -417,7 +467,52 @@
             renderMonthlyCalendar();
         }
 
-        // --- 월간 달력 렌더링 (히트맵) ---
+        function selectMonthlyDate(year, month, day) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            monthlySelectedDateStr = dateStr;
+            renderMonthlyCalendar();
+            
+            // 목록 업데이트
+            const listTitle = document.getElementById('monthly-list-title');
+            const listContainer = document.getElementById('monthly-book-list');
+            const dayBooks = getBooksByDate(dateStr);
+            
+            // 수정됨: font-bold 제거
+            listTitle.innerHTML = `<span class="text-blue-600 font-medium">${month + 1}월 ${day}일</span> 읽은 책 (${dayBooks.length}권)`;
+            
+            listContainer.innerHTML = '';
+            if (dayBooks.length === 0) {
+                listContainer.innerHTML = `
+                    <li class="text-gray-400 text-center text-sm flex flex-col items-center justify-center py-8">
+                        <i class="fas fa-book-open mb-2 text-2xl opacity-30"></i>
+                        이 날은 읽은 책이 없어요.
+                    </li>`;
+            } else {
+                dayBooks.forEach(book => {
+                    const li = document.createElement('li');
+                    li.className = 'bg-white p-3 rounded-xl border border-blue-100 shadow-sm flex items-center justify-between gap-2';
+                    // 수정됨: font-bold 제거
+                    const coinBadge = (book.coins === 2) 
+                        ? '<span class="text-[10px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full whitespace-nowrap">x2</span>' 
+                        : '<span class="text-[10px] bg-yellow-100 text-yellow-600 px-1.5 py-0.5 rounded-full whitespace-nowrap">x1</span>';
+                    
+                    li.innerHTML = `
+                        <div class="flex items-center gap-2 truncate text-gray-700 font-medium">
+                            <i class="fas fa-book text-blue-300 text-xs"></i>
+                            ${book.title}
+                        </div>
+                        <div class="flex items-center gap-1">
+                            ${coinBadge}
+                             <button onclick="deleteBook(${book.id})" class="text-gray-300 hover:text-red-500 w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-50 transition" title="삭제">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    listContainer.appendChild(li);
+                });
+            }
+        }
+
         function renderMonthlyCalendar() {
             const year = calendarDate.getFullYear();
             const month = calendarDate.getMonth();
@@ -432,23 +527,28 @@
 
             for (let d = 1; d <= lastDate; d++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                
-                // 해당 날짜의 총 동전 수 계산
-                const dayBooks = getBooksByDate(dateStr);
-                const count = dayBooks.reduce((sum, book) => sum + (book.coins || 1), 0);
+                const count = getBooksByDate(dateStr).reduce((sum, book) => sum + (book.coins || 1), 0);
                 
                 const cell = document.createElement('div');
                 
                 let bgClass = 'bg-white hover:bg-gray-50';
                 let textClass = 'text-gray-600';
-                if (count >= 1) { bgClass = 'bg-yellow-100 border-yellow-200'; }
-                if (count >= 3) { bgClass = 'bg-yellow-200 border-yellow-300'; }
-                if (count >= 5) { bgClass = 'bg-yellow-300 border-yellow-400 font-bold'; }
-                if (count >= 7) { bgClass = 'bg-yellow-400 border-yellow-500 text-white font-bold'; }
+                let borderClass = 'border-gray-200';
+
+                if (count >= 1) { bgClass = 'bg-yellow-100'; borderClass = 'border-yellow-200'; }
+                if (count >= 3) { bgClass = 'bg-yellow-200'; borderClass = 'border-yellow-300'; }
+                if (count >= 5) { bgClass = 'bg-yellow-300'; borderClass = 'border-yellow-400'; textClass = 'font-bold'; }
+                if (count >= 7) { bgClass = 'bg-yellow-400'; borderClass = 'border-yellow-500'; textClass = 'text-white font-bold'; }
                 
-                cell.className = `aspect-square rounded-lg border ${bgClass} ${textClass} flex items-center justify-center text-sm transition relative`;
+                if (monthlySelectedDateStr === dateStr) {
+                    borderClass = 'border-blue-500 border-2';
+                    bgClass = 'bg-blue-50';
+                    textClass = 'text-blue-600 font-bold';
+                }
+
+                cell.className = `aspect-square rounded-lg border ${borderClass} ${bgClass} ${textClass} flex items-center justify-center text-sm transition relative cursor-pointer transform hover:scale-105`;
                 cell.innerText = d;
-                if (count > 0) cell.title = `동전 ${count}개 모음`;
+                cell.onclick = () => selectMonthlyDate(year, month, d);
                 
                 grid.appendChild(cell);
             }
@@ -465,8 +565,6 @@
         
         function checkMilestone() {
             const totalCoins = books.reduce((sum, book) => sum + (book.coins || 1), 0);
-            
-            // 50개 단위 달성 체크
             if (totalCoins > 0 && totalCoins % 50 === 0) {
                 document.getElementById('celeb-count').innerText = totalCoins + "개";
                 document.getElementById('celebration-modal').classList.remove('hidden');
