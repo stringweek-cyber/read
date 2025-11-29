@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>재경이의 독서통장</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Jua Font) -->
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Jua', sans-serif;
+            background-color: #FFF9C4; /* 연한 노란색 배경 */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #FBC02D; border-radius: 10px; }
+
+        /* 동전 스타일 */
+        .coin {
+            width: 24px;
+            height: 24px;
+            background-color: #FFD54F;
+            border: 2px solid #FFB300;
+            border-radius: 50%;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #8D6E63;
+            margin-bottom: -10px; /* 동전 겹치기 */
+            position: relative;
+            z-index: 1;
+            transition: transform 0.2s;
+        }
+        .coin:hover { transform: scale(1.2) translateY(-5px); z-index: 10; }
+        .coin::before { content: '₩'; }
+        
+        /* 스페셜 동전 (어려운 책) */
+        .coin.special {
+            background-color: #FFAB00;
+            border-color: #E65100;
+            color: #FFF;
+        }
+
+        /* 날짜 선택 효과 */
+        .date-active {
+            background-color: #FFF59D;
+            border-color: #FBC02D;
+            transform: scale(1.05);
+        }
+
+        /* 월간 달력 그리드 */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        /* 말풍선 */
+        .bubble {
+            position: relative;
+            background: #ffffff;
+            border-radius: .4em;
+        }
+        .bubble:after {
+            content: '';
+            position: absolute;
+            left: 0; top: 50%;
+            width: 0; height: 0;
+            border: 10px solid transparent;
+            border-right-color: #ffffff;
+            border-left: 0;
+            margin-top: -10px; margin-left: -10px;
+        }
+
+        /* 체크박스 커스텀 */
+        .checkbox-wrapper input:checked + div {
+            background-color: #FBC02D;
+            border-color: #F57F17;
+        }
+        .checkbox-wrapper input:checked + div svg {
+            display: block;
+        }
+    </style>
+</head>
+<body class="flex justify-center items-start min-h-screen bg-yellow-50">
+
+    <!-- 모바일 앱 컨테이너 -->
+    <div class="w-full max-w-md h-[100vh] sm:h-[90vh] sm:mt-8 bg-white sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden relative border-4 border-yellow-200">
+        
+        <!-- 상단 헤더 -->
+        <header class="bg-yellow-400 p-4 pt-6 rounded-b-[2rem] shadow-md z-10 flex flex-col items-center justify-center shrink-0">
+            <h1 class="text-3xl text-white drop-shadow-md tracking-wider flex items-center gap-2">
+                <i class="fas fa-book-reader text-yellow-100"></i>
+                재경이의 독서통장
+            </h1>
+            <div class="mt-3 flex gap-4 text-white text-sm font-bold bg-yellow-500 bg-opacity-50 px-4 py-1 rounded-full">
+                <span>누적 동전: <span id="total-books" class="text-yellow-100 text-lg">0</span>개</span>
+                <span>|</span>
+                <span>다음 선물까지: <span id="next-goal" class="text-yellow-100 text-lg">50</span>개</span>
+            </div>
+        </header>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main class="flex-1 overflow-y-auto p-4 space-y-4">
+            
+            <!-- 주간 달력 및 동전 영역 -->
+            <section class="bg-white p-3 rounded-3xl border-2 border-yellow-100 shadow-sm">
+                <div class="flex justify-between items-center mb-2 px-1">
+                    <h2 class="text-lg text-gray-700 font-bold"><i class="fas fa-calendar-week mr-2 text-yellow-500"></i>이번 주 독서 기록</h2>
+                    <button onclick="openMonthlyCalendar()" class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-lg hover:bg-gray-200 transition">전체 달력 보기</button>
+                </div>
+                <div id="weekly-calendar" class="flex justify-between gap-1">
+                    <!-- JS로 주간 달력 및 동전 렌더링 -->
+                </div>
+            </section>
+
+            <!-- 책 기록 영역 -->
+            <section class="bg-blue-50 p-5 rounded-3xl border-2 border-blue-100 shadow-sm">
+                <h2 class="text-lg text-blue-600 font-bold mb-3 flex items-center gap-2">
+                    <i class="fas fa-pencil-alt"></i> <span id="selected-date-display">오늘</span>의 책 기록하기
+                </h2>
+                
+                <div class="mb-4">
+                    <input type="text" id="book-input" class="w-full bg-white p-3 rounded-xl border border-blue-200 focus:outline-none focus:border-blue-400 transition mb-2" placeholder="책 제목을 입력하세요" onkeypress="if(event.key === 'Enter') saveBook()">
+                    
+                    <!-- 2배 적립 체크박스 -->
+                    <label class="checkbox-wrapper flex items-center gap-2 cursor-pointer select-none bg-white p-2 rounded-xl border border-blue-100 hover:bg-blue-50 transition">
+                        <input type="checkbox" id="double-coin-check" class="hidden">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-gray-600 font-bold text-sm">어려운 책이었나요? (동전 2개! 🪙🪙)</span>
+                    </label>
+                </div>
+
+                <button onclick="saveBook()" class="w-full bg-blue-400 hover:bg-blue-500 text-white py-3 rounded-xl shadow-md transition active:scale-95 font-bold text-lg">
+                    저금통에 넣기 💰
+                </button>
+                
+                <!-- 선택된 날짜의 책 목록 -->
+                <div class="mt-4 bg-white p-3 rounded-xl border border-blue-100 h-32 overflow-y-auto">
+                    <h3 class="text-sm text-gray-500 mb-2">📜 이 날 읽은 책 목록</h3>
+                    <ul id="daily-book-list" class="space-y-2 text-gray-700">
+                        <!-- JS로 책 목록 렌더링 -->
+                        <li class="text-gray-400 text-center py-4">아직 기록된 책이 없어요.</li>
+                    </ul>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- 캐릭터 푸터 -->
+        <footer class="shrink-0 bg-white/90 backdrop-blur-sm p-3 border-t border-yellow-100 flex items-center gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+            <div class="relative shrink-0">
+                <!-- SVG 직접 삽입 (이미지 깨짐 방지) -->
+                <div class="w-16 h-16 rounded-full border-4 border-yellow-300 bg-yellow-100 shadow-md overflow-hidden relative">
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <!-- 배경 -->
+                        <rect width="100" height="100" fill="#FFECB3"/>
+                        <!-- 머리 -->
+                        <path d="M50 20 C30 20 15 35 15 55 C15 75 30 90 50 90 C70 90 85 75 85 55 C85 35 70 20 50 20" fill="#FFCC80"/>
+                        <!-- 머리카락 -->
+                        <path d="M15 55 C15 30 30 10 50 10 C70 10 85 30 85 55 C85 45 80 25 50 25 C20 25 15 45 15 55" fill="#5D4037"/>
+                        <!-- 눈 -->
+                        <circle cx="35" cy="50" r="4" fill="#3E2723"/>
+                        <circle cx="65" cy="50" r="4" fill="#3E2723"/>
+                        <!-- 홍조 -->
+                        <circle cx="25" cy="60" r="5" fill="#FFAB91" opacity="0.6"/>
+                        <circle cx="75" cy="60" r="5" fill="#FFAB91" opacity="0.6"/>
+                        <!-- 입 (웃는 모양) -->
+                        <path d="M35 65 Q50 75 65 65" stroke="#3E2723" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="bubble bg-white border border-gray-200 p-3 shadow-sm flex-1 text-sm text-gray-600 animate-bounce">
+                <span id="mascot-message">매일 매일 책을 읽고 동전을 모아봐!</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- 월간 달력 모달 -->
+    <div id="monthly-calendar-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-4 shadow-2xl relative">
+            <button onclick="closeMonthlyCalendar()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times fa-lg"></i>
+            </button>
+            <div class="flex justify-between items-center mb-4 px-2 mt-2">
+                <button onclick="changeMonth(-1)" class="text-gray-400 hover:text-yellow-500"><i class="fas fa-chevron-left fa-lg"></i></button>
+                <h2 id="calendar-title" class="text-xl text-gray-700 font-bold"></h2>
+                <button onclick="changeMonth(1)" class="text-gray-400 hover:text-yellow-500"><i class="fas fa-chevron-right fa-lg"></i></button>
+            </div>
+            
+            <!-- 요일 헤더 -->
+            <div class="grid grid-cols-7 text-center mb-2 text-gray-500 text-sm">
+                <div class="text-red-400">일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div class="text-blue-400">토</div>
+            </div>
+
+            <!-- 날짜 그리드 -->
+            <div id="calendar-days" class="calendar-grid mb-4">
+                <!-- JS로 렌더링 -->
+            </div>
+
+            <!-- 범례 -->
+            <div class="flex justify-center items-center gap-2 text-xs text-gray-500 bg-gray-50 p-2 rounded-xl">
+                <span>조금</span>
+                <div class="w-4 h-4 rounded bg-yellow-100 border border-yellow-200"></div>
+                <div class="w-4 h-4 rounded bg-yellow-300 border border-yellow-400"></div>
+                <div class="w-4 h-4 rounded bg-yellow-500 border border-yellow-600"></div>
+                <span>많이</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 미션 달성 축하 모달 -->
+    <div id="celebration-modal" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl border-4 border-purple-300 animate-bounce relative">
+            <div class="text-6xl mb-4">🧞‍♂️</div>
+            <h2 class="text-3xl font-bold text-purple-600 mb-2">축하합니다!!</h2>
+            <p class="text-gray-600 text-lg mb-6">동전 <span id="celeb-count" class="font-bold text-red-500 text-2xl">50개</span>를 모았어요!</p>
+            
+            <div class="bg-gradient-to-r from-purple-100 to-pink-100 p-4 rounded-2xl border-2 border-purple-200 mb-6 transform rotate-1">
+                <p class="font-bold text-purple-800 text-xl">🎁 소원 들어주기 쿠폰</p>
+                <p class="text-sm text-purple-600 mt-2">부모님께 이 화면을 보여드리고<br>소원을 말해보세요!</p>
+            </div>
+
+            <button onclick="closeCelebration()" class="w-full py-4 bg-purple-500 text-white rounded-xl font-bold text-lg shadow-lg hover:bg-purple-600 transition">야호! 알겠어요!</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 상태 관리 ---
+        // 데이터 구조 변경: { id, title, date, coins: 1 또는 2 }
+        let books = JSON.parse(localStorage.getItem('jaekyung_books_v3')) || [];
+        let selectedDate = new Date(); // 현재 선택된 날짜
+        let calendarDate = new Date(); // 월간 달력 기준 날짜
+        
+        // --- 초기화 ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderWeeklyCalendar();
+            updateUI();
+            updateDailyBookList();
+        });
+
+        // --- 유틸리티 함수 ---
+        function getFormattedDate(date) {
+            const offset = date.getTimezoneOffset() * 60000;
+            return (new Date(date - offset)).toISOString().split('T')[0];
+        }
+
+        function getBooksByDate(dateStr) {
+            return books.filter(book => book.date === dateStr);
+        }
+
+        // --- 주간 달력 렌더링 ---
+        function renderWeeklyCalendar() {
+            const container = document.getElementById('weekly-calendar');
+            container.innerHTML = '';
+
+            const today = new Date();
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay()); // 일요일부터 시작
+
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(startOfWeek);
+                date.setDate(startOfWeek.getDate() + i);
+                const dateStr = getFormattedDate(date);
+                const dayBooks = getBooksByDate(dateStr);
+
+                const dayCol = document.createElement('div');
+                dayCol.className = `flex-1 flex flex-col items-center p-1 rounded-2xl border-2 border-transparent transition cursor-pointer ${dateStr === getFormattedDate(selectedDate) ? 'date-active' : ''}`;
+                dayCol.onclick = () => selectDate(date);
+
+                const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+                const dayLabel = document.createElement('div');
+                dayLabel.className = `text-xs mb-1 ${i === 0 ? 'text-red-400' : (i === 6 ? 'text-blue-400' : 'text-gray-500')}`;
+                dayLabel.innerText = weekDays[i];
+                dayCol.appendChild(dayLabel);
+
+                const dateLabel = document.createElement('div');
+                dateLabel.className = 'text-lg font-bold text-gray-700 mb-2';
+                dateLabel.innerText = date.getDate();
+                dayCol.appendChild(dateLabel);
+
+                // 동전 쌓기 영역
+                const coinContainer = document.createElement('div');
+                coinContainer.className = 'flex flex-col-reverse items-center h-24 w-full overflow-hidden pb-1';
+                
+                // 동전 렌더링 (2배 책은 2개 렌더링)
+                let coinCount = 0;
+                dayBooks.forEach((book) => {
+                    const value = book.coins || 1; // 기본 1개
+                    for(let c=0; c < value; c++) {
+                        if (coinCount < 12) { // 공간상 제한
+                            const coin = document.createElement('div');
+                            coin.className = value === 2 ? 'coin special' : 'coin'; // 2배는 스페셜 스타일
+                            coinContainer.appendChild(coin);
+                        }
+                        coinCount++;
+                    }
+                });
+                
+                if (coinCount > 12) {
+                     const more = document.createElement('div');
+                     more.className = 'text-xs text-yellow-600 font-bold mt-1';
+                     more.innerText = `+${coinCount - 12}`;
+                     coinContainer.appendChild(more);
+                }
+
+                dayCol.appendChild(coinContainer);
+                container.appendChild(dayCol);
+            }
+        }
+
+        // --- 날짜 선택 ---
+        function selectDate(date) {
+            selectedDate = date;
+            renderWeeklyCalendar(); // 선택 효과 업데이트
+            updateDailyBookList();
+            
+            const dateStr = getFormattedDate(date);
+            const todayStr = getFormattedDate(new Date());
+            const displayDate = dateStr === todayStr ? '오늘' : `${date.getMonth() + 1}월 ${date.getDate()}일`;
+            document.getElementById('selected-date-display').innerText = displayDate;
+        }
+
+        // --- 책 저장 ---
+        function saveBook() {
+            const input = document.getElementById('book-input');
+            const checkbox = document.getElementById('double-coin-check');
+            
+            const title = input.value.trim();
+            const coins = checkbox.checked ? 2 : 1; // 체크되면 2개
+
+            if (!title) { alert('책 제목을 입력해주세요!'); return; }
+
+            const dateStr = getFormattedDate(selectedDate);
+            books.push({ id: Date.now(), title: title, date: dateStr, coins: coins });
+            localStorage.setItem('jaekyung_books_v3', JSON.stringify(books));
+
+            input.value = '';
+            checkbox.checked = false; // 체크박스 초기화
+            
+            renderWeeklyCalendar();
+            updateUI();
+            updateDailyBookList();
+            checkMilestone();
+            
+            const msg = coins === 2 ? `우와! 어려운 책을 읽었네! 동전 2개 획득! 🪙🪙` : `"${title}" 저금 완료! 참 잘했어!`;
+            setMascotMessage(msg);
+        }
+
+        // --- 일일 책 목록 업데이트 ---
+        function updateDailyBookList() {
+            const listContainer = document.getElementById('daily-book-list');
+            const dateStr = getFormattedDate(selectedDate);
+            const dayBooks = getBooksByDate(dateStr);
+
+            listContainer.innerHTML = '';
+            if (dayBooks.length === 0) {
+                listContainer.innerHTML = '<li class="text-gray-400 text-center py-4">아직 기록된 책이 없어요.</li>';
+            } else {
+                dayBooks.forEach(book => {
+                    const li = document.createElement('li');
+                    li.className = 'bg-white p-2 rounded-lg border border-gray-100 flex items-center justify-between gap-2';
+                    const coinBadge = (book.coins === 2) 
+                        ? '<span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full font-bold">동전x2</span>' 
+                        : '<span class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full">동전x1</span>';
+                    
+                    li.innerHTML = `
+                        <div class="flex items-center gap-2 truncate">
+                            <i class="fas fa-book text-blue-300"></i>
+                            <span class="truncate">${book.title}</span>
+                        </div>
+                        ${coinBadge}
+                    `;
+                    listContainer.appendChild(li);
+                });
+            }
+        }
+
+        // --- UI 전체 업데이트 ---
+        function updateUI() {
+            // 총 동전 개수 계산 (단순 책 권수가 아님)
+            const totalCoins = books.reduce((sum, book) => sum + (book.coins || 1), 0);
+            
+            document.getElementById('total-books').innerText = totalCoins;
+            
+            // 50개 단위 목표 계산
+            const nextGoal = Math.ceil((totalCoins + 1) / 50) * 50;
+            document.getElementById('next-goal').innerText = nextGoal - totalCoins;
+        }
+
+        // --- 월간 달력 모달 ---
+        function openMonthlyCalendar() {
+            calendarDate = new Date(selectedDate); // 현재 선택된 날짜 기준으로 염
+            renderMonthlyCalendar();
+            document.getElementById('monthly-calendar-modal').classList.remove('hidden');
+        }
+        function closeMonthlyCalendar() {
+            document.getElementById('monthly-calendar-modal').classList.add('hidden');
+        }
+        function changeMonth(delta) {
+            calendarDate.setMonth(calendarDate.getMonth() + delta);
+            renderMonthlyCalendar();
+        }
+
+        // --- 월간 달력 렌더링 (히트맵) ---
+        function renderMonthlyCalendar() {
+            const year = calendarDate.getFullYear();
+            const month = calendarDate.getMonth();
+            document.getElementById('calendar-title').innerText = `${year}년 ${month + 1}월`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const lastDate = new Date(year, month + 1, 0).getDate();
+            const grid = document.getElementById('calendar-days');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
+
+            for (let d = 1; d <= lastDate; d++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                
+                // 해당 날짜의 총 동전 수 계산
+                const dayBooks = getBooksByDate(dateStr);
+                const count = dayBooks.reduce((sum, book) => sum + (book.coins || 1), 0);
+                
+                const cell = document.createElement('div');
+                
+                let bgClass = 'bg-white hover:bg-gray-50';
+                let textClass = 'text-gray-600';
+                if (count >= 1) { bgClass = 'bg-yellow-100 border-yellow-200'; }
+                if (count >= 3) { bgClass = 'bg-yellow-200 border-yellow-300'; }
+                if (count >= 5) { bgClass = 'bg-yellow-300 border-yellow-400 font-bold'; }
+                if (count >= 7) { bgClass = 'bg-yellow-400 border-yellow-500 text-white font-bold'; }
+                
+                cell.className = `aspect-square rounded-lg border ${bgClass} ${textClass} flex items-center justify-center text-sm transition relative`;
+                cell.innerText = d;
+                if (count > 0) cell.title = `동전 ${count}개 모음`;
+                
+                grid.appendChild(cell);
+            }
+        }
+
+        // --- 마스코트 및 미션 ---
+        function setMascotMessage(msg) {
+            const el = document.getElementById('mascot-message');
+            el.innerText = msg;
+            el.parentElement.classList.remove('animate-bounce');
+            void el.parentElement.offsetWidth;
+            el.parentElement.classList.add('animate-bounce');
+        }
+        
+        function checkMilestone() {
+            const totalCoins = books.reduce((sum, book) => sum + (book.coins || 1), 0);
+            
+            // 50개 단위 달성 체크
+            if (totalCoins > 0 && totalCoins % 50 === 0) {
+                document.getElementById('celeb-count').innerText = totalCoins + "개";
+                document.getElementById('celebration-modal').classList.remove('hidden');
+                fireConfetti();
+            }
+        }
+        
+        function closeCelebration() {
+            document.getElementById('celebration-modal').classList.add('hidden');
+        }
+        
+        function fireConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) { return clearInterval(interval); }
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: 0.1, y: 0.6 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: 0.9, y: 0.6 } }));
+            }, 250);
+        }
+    </script>
+</body>
+</html>
